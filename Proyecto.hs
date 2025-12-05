@@ -24,6 +24,72 @@ s = Var "s"
 t = Var "t"
 u = Var "u"
 
+
+-- =============================================================
+-- ARBOLES DE PRUEBA
+t0 :: ArbolN Int
+t0 = Void
+
+t1 :: ArbolN Int
+t1 = Node 1 []
+
+t2 :: ArbolN Int
+t2 = Node 1 [Node 2 [], Node 3 []]
+
+t3 :: ArbolN Int
+t3 = Node 10
+        [ Node 5  []
+        , Node 7  [Node 8 [], Node 9 []]
+        , Node 12 []
+        ]
+
+t4 :: ArbolN Char
+t4 = Node 'a'
+        [ Node 'b'
+            [ Node 'c'
+                [ Node 'd' [], Node 'e' [] ]
+            ]
+        , Node 'f' []
+        ]
+
+t5 :: ArbolN String
+t5 = Node "root"
+        [ Node "a" []
+        , Node "b" []
+        , Node "c" []
+        , Node "d" []
+        , Node "e" []
+        ]
+
+t6 :: ArbolN Int
+t6 = Node 1
+        [ Void
+        , Node 2 [Void, Node 3 []]
+        , Void
+        ]
+
+t7 :: ArbolN Int
+t7 = Node 1
+        [ Node 2
+            [ Node 4 []
+            , Node 5
+                [Node 8 [], Node 9 []]
+            ]
+        , Node 3
+            [ Node 6 []
+            , Node 7
+                [ Node 10 [], Node 11 [], Node 12 [] ]
+            ]
+        ]
+
+t8 :: ArbolN Int
+t8 = Node 1
+        [ Node 1 []
+        , Node 2 [Node 1 [], Node 3 []]
+        ]
+-- ================================================================
+
+
 crearArbol :: a -> [ArbolN a] -> ArbolN a
 crearArbol x [] = Node x []
 crearArbol x lr = Node x lr
@@ -52,5 +118,77 @@ arbolaformula (Node x []) = Var x
 
 
 
+-- SECCION OTRAS FUNCIONES
 
+-- Ejercicio 5
+altura :: ArbolN a -> Int
+altura Void = 0
+altura (Node _ []) = 1
+altura (Node _ xs) = 1 + (encontrarMayor (mapping altura xs))
+
+
+-- Ejercicio 6
+espejo :: ArbolN a -> ArbolN a
+espejo Void = Void
+espejo (Node x []) = Node x []
+espejo (Node y (xs)) = Node y (reversa(mapping espejo (xs)))
+
+
+-- Ejercicio 7
+
+                          -----------------  DUDAS  -------------------
+podar :: Int -> ArbolN a -> ArbolN a
+podar _ Void = Void
+podar y (Node x []) = if (y == 0) then Void else (Node x [])
+podar y (Node z (x:xs)) = if (y == 0) then Void else (Node z (mapping (podar (y - 1)) (x:xs)))
+
+-- Ejercicio 8
+elementosProfundidad :: Int -> ArbolN a -> [a]
+elementosProfundidad _ Void = []
+elementosProfundidad n (Node y []) = if (n == 0) then [y] else []
+elementosProfundidad n (Node y xs) = if (n == 0) then [y] else desenvolver (mapping (elementosProfundidad (n - 1)) (xs))
+
+
+-- ======================== Auxiliar ===========================
+desenvolver :: [[a]] -> [a]
+desenvolver [] = []
+desenvolver (x:xs) = x ++ (desenvolver xs)
+
+
+
+-- FUNCIONES AUXILIARES
+
+-- La funcion mapping convierte una lista de "a" a una lista de "b" de
+-- acuerdo a la funcion dada
+-- La funcion es usada en todo (Ejercicios 5, 6, 7, 8)
+mapping :: (a -> b) -> [a] -> [b]
+mapping _ [] = []
+mapping f (x:xs) = (f x):(mapping f xs)
+
+
+-- La funcion reverse invierte el orden de los elementos de una lista
+-- La funcion es usada en espejo
+reversa :: [a] -> [a]
+reversa [] = []
+reversa (x:xs) = (reversa xs) ++ [x]
+
+
+-- La funcion encontrarMayor regresa el numero mayor en una lista de Int
+-- La funcion es usada en 
+encontrarMayor :: [Int] -> Int
+encontrarMayor [] = 0
+encontrarMayor (x:xs) = auxEnMayor x xs
+
+
+auxEnMayor :: Int -> [Int] -> Int
+auxEnMayor x [] = x
+-- ================== DUDA ====================================================
+auxEnMayor x (y:ys) = if (x > y) then (auxEnMayor x ys) else (auxEnMayor y ys)
+
+
+---- La funcion length regresa el numero de elementos en una lista
+---- La funcion es usada en elementosProfundidad
+--contar :: [a] -> Int
+--contar [] = 0
+--contar (_:xs) = 1 + contar xs
 
