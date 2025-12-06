@@ -92,6 +92,11 @@ mapping :: (a -> b) -> [a] -> [b]
 mapping _ [] = []
 mapping f (x:xs) = (f x):(mapping f xs)
 
+-- Función alguno: verifica si algún elemento de la lista cumple con el predicado
+alguno :: (a -> Bool) -> [a] -> Bool
+alguno _ [] = False
+alguno f (x:xs) = f x || alguno f xs
+
 -- Función auxiliar sumar: suma todos los elementos de una lista numérica
 sumar :: Num a => [a] -> a
 sumar [] = 0
