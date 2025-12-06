@@ -119,7 +119,7 @@ numeroElementos (Node _ hijos) = 1 + sumar (mapping numeroElementos hijos)
 -- EJERCICIO 2: Buscar elementos en un árbol n-ario.
 busca :: Eq a => ArbolN a -> a -> Bool
 busca Void _ = False
-busca (Node x hijos) y = x == y || any (\hijo -> busca hijo y) hijos
+busca (Node x hijos) y = x == y || alguno (\hijo -> busca hijo y) hijos
 
 -- EJERCICIO 3: Sumar los elementos del árbol con tipos numéricos
 sumaElementos :: Num a => ArbolN a -> Int
