@@ -1,5 +1,9 @@
 # ProyectoEstructurasDiscretas
 
+
+El unico archivo que importa es Proyecto.hs, ahi esta todo lo que se pedia.
+
+
 ## Integrantes
 
 En esta sección deben eliminar esta línea de texto, borrar la leyenda "Integrante n" y escribir su nombre empezando por apellidos y su número de cuenta.
