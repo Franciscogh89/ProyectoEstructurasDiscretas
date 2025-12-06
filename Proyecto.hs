@@ -116,9 +116,61 @@ arbolaformula (Node "Falso" []) = Cons False
 arbolaformula (Node x []) = Var x       
 
 
+-- EJERCICIO 3, SECCION: ARBOLES DE SINTAXIS ABSTRACTA
+
+-- Función auxiliar para buscar una variable en el estado
+buscarVariable :: String -> [(String, Bool)] -> Bool
+buscarVariable var [] = error ("Variable '" ++ var ++ "' no encontrada en el estado")
+buscarVariable var ((nombre, valor):resto)
+    | var == nombre = valor
+    | otherwise = buscarVariable var resto
+
+-- Función que evalúa un árbol de sintaxis abstracta dado un estado de variables
+-- El estado se representa como una lista de tuplas (nombre de variable, valor)
+evaluarArbol :: ArbolN String -> [(String, Bool)] -> Bool
+evaluarArbol Void _ = error "No se puede evaluar un árbol vacío"
+evaluarArbol (Node "¬" [hijo]) estado = not (evaluarArbol hijo estado)
+evaluarArbol (Node "∧" [izq, der]) estado = evaluarArbol izq estado && evaluarArbol der estado
+evaluarArbol (Node "∨" [izq, der]) estado = evaluarArbol izq estado || evaluarArbol der estado
+evaluarArbol (Node "→" [izq, der]) estado = not (evaluarArbol izq estado) || evaluarArbol der estado
+evaluarArbol (Node "↔" [izq, der]) estado = evaluarArbol izq estado == evaluarArbol der estado
+evaluarArbol (Node "Verdadero" []) _ = True
+evaluarArbol (Node "Falso" []) _ = False
+evaluarArbol (Node var []) estado = buscarVariable var estado
+evaluarArbol (Node x _) _ = error ("Operador desconocido: " ++ x)
+
 
 
 -- SECCION OTRAS FUNCIONES
+
+
+-- EJERCICIO 1: Para revisar cuántos elementos tiene un árbol n-ario
+numeroElementos :: ArbolN a -> Int
+numeroElementos Void = 0
+numeroElementos (Node _ hijos) = 1 + sumar (mapping numeroElementos hijos)
+
+-- EJERCICIO 2: Buscar elementos en un árbol n-ario.
+busca :: Eq a => ArbolN a -> a -> Bool
+busca Void _ = False
+busca (Node x hijos) y = x == y || alguno (\hijo -> busca hijo y) hijos
+
+-- EJERCICIO 3: Sumar los elementos del árbol con tipos numéricos
+sumaElementos :: Num a => ArbolN a -> Int
+sumaElementos Void = 0
+sumaElementos (Node _ hijos) = 1 + sumar (mapping sumaElementos hijos)
+
+-- EJERCICIO 4: Funciones preorden y postorden.
+-- Recorrido en preorden (raíz -> hijos de izquierda a derecha)
+preorden :: ArbolN a -> [a]
+preorden Void = []
+preorden (Node x hijos) = [x] ++ concatenarMapping preorden hijos
+
+-- Recorrido en postorden (hijos de izquierda a derecha -> raíz)
+postorden :: ArbolN a -> [a]
+postorden Void = []
+postorden (Node x hijos) = concatenarMapping postorden hijos ++ [x]
+
+
 
 -- Ejercicio 5
 altura :: ArbolN a -> Int
@@ -135,24 +187,17 @@ espejo (Node y (xs)) = Node y (reversa(mapping espejo (xs)))
 
 
 -- Ejercicio 7
-
-                          -----------------  DUDAS  -------------------
 podar :: Int -> ArbolN a -> ArbolN a
 podar _ Void = Void
 podar y (Node x []) = if (y == 0) then Void else (Node x [])
 podar y (Node z (x:xs)) = if (y == 0) then Void else (Node z (mapping (podar (y - 1)) (x:xs)))
+
 
 -- Ejercicio 8
 elementosProfundidad :: Int -> ArbolN a -> [a]
 elementosProfundidad _ Void = []
 elementosProfundidad n (Node y []) = if (n == 0) then [y] else []
 elementosProfundidad n (Node y xs) = if (n == 0) then [y] else desenvolver (mapping (elementosProfundidad (n - 1)) (xs))
-
-
--- ======================== Auxiliar ===========================
-desenvolver :: [[a]] -> [a]
-desenvolver [] = []
-desenvolver (x:xs) = x ++ (desenvolver xs)
 
 
 
@@ -174,15 +219,14 @@ reversa (x:xs) = (reversa xs) ++ [x]
 
 
 -- La funcion encontrarMayor regresa el numero mayor en una lista de Int
--- La funcion es usada en 
+-- La funcion es usada en altura
 encontrarMayor :: [Int] -> Int
 encontrarMayor [] = 0
 encontrarMayor (x:xs) = auxEnMayor x xs
 
-
+-- Auxiliar de encontrarMayor
 auxEnMayor :: Int -> [Int] -> Int
 auxEnMayor x [] = x
--- ================== DUDA ====================================================
 auxEnMayor x (y:ys) = if (x > y) then (auxEnMayor x ys) else (auxEnMayor y ys)
 
 
@@ -192,3 +236,30 @@ auxEnMayor x (y:ys) = if (x > y) then (auxEnMayor x ys) else (auxEnMayor y ys)
 --contar [] = 0
 --contar (_:xs) = 1 + contar xs
 
+
+-- La funcion desenvolver toma una lista de listas de algun tipo y devuelve una lista
+-- con todos los elementos de las listas
+-- La funcion es usada en elementosProfundidad
+desenvolver :: [[a]] -> [a]
+desenvolver [] = []
+desenvolver (x:xs) = x ++ (desenvolver xs)
+
+
+-- Función alguno: verifica si algún elemento de la lista cumple con el predicado
+alguno :: (a -> Bool) -> [a] -> Bool
+alguno _ [] = False
+alguno f (x:xs) = f x || alguno f xs
+
+-- Función auxiliar sumar: suma todos los elementos de una lista numérica
+sumar :: Num a => [a] -> a
+sumar [] = 0
+sumar (x:xs) = x + sumar xs
+
+-- Función auxiliar concatenar (necesaria para concatenarMapping)
+concatenar :: [[a]] -> [a]
+concatenar [] = []
+concatenar (x:xs) = x ++ concatenar xs
+
+-- Función auxiliar concatenarMapping
+concatenarMapping :: (a -> [b]) -> [a] -> [b]
+concatenarMapping f xs = concatenar (mapping f xs)
