@@ -92,7 +92,7 @@ mapping :: (a -> b) -> [a] -> [b]
 mapping _ [] = []
 mapping f (x:xs) = (f x):(mapping f xs)
 
--- Función auxiliar sum: suma todos los elementos de una lista numérica
+-- Función auxiliar sumar: suma todos los elementos de una lista numérica
 sumar :: Num a => [a] -> a
 sumar [] = 0
 sumar (x:xs) = x + sumar xs
