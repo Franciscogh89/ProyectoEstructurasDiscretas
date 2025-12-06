@@ -97,7 +97,7 @@ sumar :: Num a => [a] -> a
 sumar [] = 0
 sumar (x:xs) = x + sumar xs
 
--- Función auxiliar concat (necesaria para concatenarMapping)
+-- Función auxiliar concatenar (necesaria para concatenarMapping)
 concatenar :: [[a]] -> [a]
 concatenar [] = []
 concatenar (x:xs) = x ++ concatenar xs
