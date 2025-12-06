@@ -85,32 +85,58 @@ evaluarArbol (Node x _) _ = error ("Operador desconocido: " ++ x)
 
 -- SECCION: OTRAS FUNCIONES
 
--- EJERCICIO 1: Para revisar cuántos elementos tiene un árbol n-ario.
+-- La funcion mapping convierte una lista de "a" a una lista de "b" de
+-- acuerdo a la funcion dada
+-- La funcion es usada en todo (Ejercicios 5, 6, 7, 8)
+mapping :: (a -> b) -> [a] -> [b]
+mapping _ [] = []
+mapping f (x:xs) = (f x):(mapping f xs)
+
+-- Función auxiliar sum: suma todos los elementos de una lista numérica
+sumar :: Num a => [a] -> a
+sumar [] = 0
+sumar (x:xs) = x + sumar xs
+
+-- Función auxiliar concat (necesaria para concatMap)
+concatenar :: [[a]] -> [a]
+concatenar [] = []
+concatenar (x:xs) = x ++ concatenar xs
+
+-- Función auxiliar concatenarMapping usando mapping
+concatenarMapping :: (a -> [b]) -> [a] -> [b]
+concatenarMapping f xs = concatenar (mapping f xs)
+
+-- EJERCICIO 1: Para revisar cuántos elementos tiene un árbol n-ario
 numeroElementos :: ArbolN a -> Int
 numeroElementos Void = 0
-numeroElementos (Node _ hijos) = 1 + sum (map numeroElementos hijos)
+numeroElementos (Node _ hijos) = 1 + sumar (mapping numeroElementos hijos)
 
 -- EJERCICIO 2: Buscar elementos en un árbol n-ario.
 busca :: Eq a => ArbolN a -> a -> Bool
 busca Void _ = False
 busca (Node x hijos) y = x == y || any (\hijo -> busca hijo y) hijos
 
--- EJERCICIO 3: Sumar los elementos del árbol con tipos numéricos.
+-- EJERCICIO 3: Sumar los elementos del árbol con tipos numéricos
 sumaElementos :: Num a => ArbolN a -> Int
 sumaElementos Void = 0
-sumaElementos (Node _ hijos) = 1 + sum (map sumaElementos hijos)
+sumaElementos (Node _ hijos) = 1 + sumar (mapping sumaElementos hijos)
 
 -- EJERCICIO 4: Funciones preorden y postorden.
-
 -- Recorrido en preorden (raíz -> hijos de izquierda a derecha)
 preorden :: ArbolN a -> [a]
 preorden Void = []
-preorden (Node x hijos) = [x] ++ concatMap preorden hijos
+preorden (Node x hijos) = [x] ++ concatenarMapping preorden hijos
 
 -- Recorrido en postorden (hijos de izquierda a derecha -> raíz)
 postorden :: ArbolN a -> [a]
 postorden Void = []
-postorden (Node x hijos) = concatMap postorden hijos ++ [x]
+postorden (Node x hijos) = concatenarMapping postorden hijos ++ [x]
+
+
+
+
+
+
 
 
 
