@@ -102,7 +102,7 @@ concatenar :: [[a]] -> [a]
 concatenar [] = []
 concatenar (x:xs) = x ++ concatenar xs
 
--- Función auxiliar concatenarMapping usando mapping
+-- Función auxiliar concatenarMapping
 concatenarMapping :: (a -> [b]) -> [a] -> [b]
 concatenarMapping f xs = concatenar (mapping f xs)
 
